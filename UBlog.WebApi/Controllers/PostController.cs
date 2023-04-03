@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using UBlog.Core.ContentConstructors;
+using UBlog.Core.Interfaces;
 using UBlog.Core.Models;
+using UBlog.EntityFramework.Models;
 
 namespace UBlog.Controllers;
 
@@ -8,40 +9,82 @@ namespace UBlog.Controllers;
 [Route("posts")]
 public class PostController : ControllerBase
 {
-    [HttpGet]
-    public Post[] GetPosts()
-    {
-        var posts = new List<Post>();
-        for (int i = 0; i < 5; i++)
-        {
-            posts.Add(PostGenerator.GetPost());
-        }
+    private readonly IDatabaseService _dbService; 
         
-        return posts.ToArray();
+    public PostController(IDatabaseService service)
+    {
+        _dbService = service;
+    }
+    
+    [HttpGet]
+    public PostSimple[] GetPosts()
+    {
+        return _dbService.Where<Post>()
+            .Select(o => o.Simplify())
+            .ToArray();
     }
 
     [HttpGet("{id}")]
-    public Post GetPost(string id)
+    public PostSimple GetPost(Guid id)
     {
-        return PostGenerator.GetPost();
+        return _dbService.Find<Post>(id)
+            .Simplify();
+    }
+    
+    [HttpGet("user/{id}")]
+    public PostSimple[] GetUserPosts(Guid id)
+    {
+        return _dbService.Where<Post>(o => o.UserId.Equals(id))
+            .Select(o => o.Simplify())
+            .ToArray();
     }
 
-    [HttpDelete]
-    public IResult DeletePost(Post post)
+    [HttpGet("userlikes/{id}")]
+    public PostSimple[] GetUserLikesPosts(Guid id)
     {
+        var likes = _dbService.Where<Like>(o => o.UserId.Equals(id))
+            .Select(o => o.PostId)
+            .ToArray();
+
+        return _dbService.Where<Post>(o => o.Id.Equals(id))
+            .Select(o => o.Simplify())
+            .ToArray();
+    }
+
+    [HttpGet("followed")]
+    public PostSimple[] GetFollowedPosts()
+    {
+        var id = Guid.NewGuid();//get from authorization
+        
+        var subscribes = _dbService.Where<Subscribe>(o => o.FollowerId.Equals(id))
+            .Select(o => o.FollowedId)
+            .ToArray();
+
+        return _dbService.Where<User>(o => subscribes.Contains(o.Id))
+            .SelectMany(o => GetUserPosts(o.Id))
+            .ToArray();
+    }
+    
+    
+    [HttpDelete("{id}")]
+    public IResult DeletePost(Guid id)
+    {
+        _dbService.Remove<Post>(id);
         return Results.Ok();
     }
     
     // =<
     [HttpPost]
-    public IResult PostPost(Post post)
+    public IResult PostPost([FromBody] PostSimple post)
     {
+        _dbService.Add(post);
         return Results.Ok();
     }
     
     [HttpPut]
-    public IResult PutPost(Post post)
+    public IResult PutPost([FromBody] PostSimple post)
     {
+        _dbService.Update<Post, PostSimple>(post);
         return Results.Ok();
     }
 }

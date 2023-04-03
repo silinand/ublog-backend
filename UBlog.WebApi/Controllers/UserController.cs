@@ -1,45 +1,79 @@
 using Microsoft.AspNetCore.Mvc;
+using UBlog.Core.Interfaces;
 using UBlog.Core.Models;
+using UBlog.EntityFramework.Models;
 
 namespace UBlog.Controllers;
 
 [ApiController]
-[Route("user")]
+[Route("users")]
 public class UserController : ControllerBase
 {
+    private IDatabaseService _dbService;
+
+    public UserController(IDatabaseService service)
+    {
+        _dbService = service;
+    }
+    
     [HttpGet]
-    public IEnumerable<User> GetUsers()
+    public UserSimple[] GetUsers()
     {
-        var users = new List<User>();
-        for (int i = 0; i < 5; i++)
-        {
-            users.Add(Core.Models.User.GetOne());
-        }
-        
-        return users.ToArray();
+        return _dbService.Where<User>()
+            .Select(o => o.Simplify())
+            .ToArray();
     }
-
+    
     [HttpGet("{id}")]
-    public User GetUser(string id)
+    public UserSimple GetUser(Guid id)
     {
-        return Core.Models.User.GetOne();
+        return _dbService.Find<User>(id)
+            .Simplify();
     }
 
+    [HttpGet("followed/{id}")]
+    public UserSimple[] GetFollowedUsers(Guid id)
+    {
+        return GetFollowingUsers(id, o => o.FollowedId);
+    }
+    
+    [HttpGet("follower/{id}")]
+    public UserSimple[] GetFollowerUsers(Guid id)
+    {
+        return GetFollowingUsers(id, o => o.FollowerId);
+    }
+
+    private UserSimple[] GetFollowingUsers(Guid id, Func<Subscribe, Guid> func)
+    {
+        var user = _dbService.Find<User>(id);
+
+        var ids = _dbService.Where<Subscribe>(o => func(o).Equals(id));
+        return _dbService.Where<User>(o => o.Id.Equals(id))
+            .Select(o => o.Simplify())
+            .ToArray();
+    }
+    
     [HttpPost]
-    public IResult AddUser(User user)
+    public IResult AddUser([FromBody] UserSimple user)
     {
+        _dbService.Add(user);
+        
         return Results.Ok();
     }
-
-    [HttpDelete]
-    public IResult DeleteUser(string id)
+    
+    [HttpDelete("{id}")]
+    public IResult DeleteUser(Guid id)
     {
+        _dbService.Remove<User>(id);
+        
         return Results.Ok();
     }
-
+    
     [HttpPut]
-    public IResult PutUser(User user)
+    public IResult PutUser([FromBody] UserSimple user)
     {
+        _dbService.Update<User, UserSimple>(user);
+        
         return Results.Ok();
     }
 }

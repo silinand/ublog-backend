@@ -7,10 +7,17 @@ public static class PostGenerator
 {
     private static int _counter = 0;
 
-    public static Post GetPost()
+    public static PostSimple GetPost()
     {
-        return new Post("Post title", GetText(), GetImage(), DateTime.Now);
-}
+        return new PostSimple()
+        {
+            Id = Guid.NewGuid(),
+            Title = "Post title",
+            Text = GetText(),
+            Image = GetImage(),
+            CreationTime = DateTime.Now
+        };
+    }
     
     private static string GetText()
     {
