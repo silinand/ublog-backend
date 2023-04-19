@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UBlog.Core.Interfaces;
 using UBlog.Core.Models;
-using UBlog.EntityFramework.Models;
+using UBlog.Core.Services;
 
 namespace UBlog.Controllers;
 
@@ -9,82 +9,73 @@ namespace UBlog.Controllers;
 [Route("posts")]
 public class PostController : ControllerBase
 {
-    private readonly IDatabaseService _dbService; 
+    private readonly IPostService _postService; 
         
-    public PostController(IDatabaseService service)
+    public PostController(IPostService service)
     {
-        _dbService = service;
+        _postService = service;
     }
     
     [HttpGet]
-    public PostSimple[] GetPosts()
+    public async Task<IList<PostSimple>> GetPosts()
     {
-        return _dbService.Where<Post>()
-            .Select(o => o.Simplify())
-            .ToArray();
+        return await _postService.GetPosts();
     }
 
     [HttpGet("{id}")]
-    public PostSimple GetPost(Guid id)
+    public async Task<PostSimple> GetPost(Guid id)
     {
-        return _dbService.Find<Post>(id)
-            .Simplify();
+        return await _postService.GetPost(id);
     }
     
     [HttpGet("user/{id}")]
-    public PostSimple[] GetUserPosts(Guid id)
+    public async Task<IList<PostSimple>> GetUserPosts(string id)
     {
-        return _dbService.Where<Post>(o => o.UserId.Equals(id))
-            .Select(o => o.Simplify())
-            .ToArray();
+        return await _postService.GetUserPosts(id);
     }
 
+    [Authorize]
     [HttpGet("userlikes/{id}")]
-    public PostSimple[] GetUserLikesPosts(Guid id)
+    public Task<IList<PostSimple>> GetUserLikesPosts(string id)
     {
-        var likes = _dbService.Where<Like>(o => o.UserId.Equals(id))
-            .Select(o => o.PostId)
-            .ToArray();
-
-        return _dbService.Where<Post>(o => o.Id.Equals(id))
-            .Select(o => o.Simplify())
-            .ToArray();
+        return _postService.GetLikedPosts(id);
     }
 
-    [HttpGet("followed")]
-    public PostSimple[] GetFollowedPosts()
+    [Authorize]
+    [HttpGet("following")]
+    public Task<IList<PostSimple>> GetFollowingPosts()
     {
-        var id = Guid.NewGuid();//get from authorization
-        
-        var subscribes = _dbService.Where<Subscribe>(o => o.FollowerId.Equals(id))
-            .Select(o => o.FollowedId)
-            .ToArray();
+        var id = HttpContext.User.GetUsername();
 
-        return _dbService.Where<User>(o => subscribes.Contains(o.Id))
-            .SelectMany(o => GetUserPosts(o.Id))
-            .ToArray();
+        return _postService.GetFollowingPosts(id);
     }
     
     
+    [Authorize]
     [HttpDelete("{id}")]
     public IResult DeletePost(Guid id)
     {
-        _dbService.Remove<Post>(id);
+        _postService.Remove(id);
+        
         return Results.Ok();
     }
     
     // =<
+    [Authorize]
     [HttpPost]
     public IResult PostPost([FromBody] PostSimple post)
     {
-        _dbService.Add(post);
+        _postService.Post(post);
+        
         return Results.Ok();
     }
     
+    [Authorize]
     [HttpPut]
     public IResult PutPost([FromBody] PostSimple post)
     {
-        _dbService.Update<Post, PostSimple>(post);
+        _postService.Update(post);
+        
         return Results.Ok();
     }
 }

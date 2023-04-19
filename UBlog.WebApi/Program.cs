@@ -1,19 +1,29 @@
-using UBlog.Core.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using UBlog.EntityFramework;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o => o.LoginPath = "/login");
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
+
+builder.Services.AddDbSupport();
 
 var app = builder.Build();
 
-app.UseCors(o => o.AllowAnyOrigin());
+app.UseCors(o =>
+{
+    o.WithOrigins("http://localhost:3000");
+    o.AllowAnyHeader();
+    o.AllowCredentials();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

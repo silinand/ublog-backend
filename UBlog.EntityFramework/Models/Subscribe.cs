@@ -5,17 +5,14 @@ namespace UBlog.EntityFramework.Models;
 [Keyless]
 public class Subscribe
 {
-    public Guid FollowerId { get; }
-    public Guid FollowedId { get; }
-    public DateTime CreationTime { get; }
+    public string FollowerId { get; init; }
+    public string FollowingId { get; init; }
+    public DateTime CreationTime { get; init; }
 
-    public Subscribe()
-    { }
-    
-    internal Subscribe(Guid followerId, Guid followedId, DateTime time)
+    public Subscribe(string userId, string followingId, DateTime time)
     {
-        FollowerId = followerId;
-        FollowedId = followedId;
+        FollowerId = userId;
+        FollowingId = followingId;
         CreationTime = time;
     }
 }

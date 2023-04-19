@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UBlog.Core.Interfaces;
 using UBlog.Core.Models;
-using UBlog.EntityFramework.Models;
+using UBlog.Core.Services;
 
 namespace UBlog.Controllers;
 
@@ -9,70 +9,68 @@ namespace UBlog.Controllers;
 [Route("users")]
 public class UserController : ControllerBase
 {
-    private IDatabaseService _dbService;
+    private readonly IUserService _userService;
 
-    public UserController(IDatabaseService service)
+    public UserController(IUserService service)
     {
-        _dbService = service;
+        _userService = service;
     }
     
     [HttpGet]
-    public UserSimple[] GetUsers()
+    public async Task<IList<UserSimple>> GetUsers()
     {
-        return _dbService.Where<User>()
-            .Select(o => o.Simplify())
-            .ToArray();
+        return await _userService.GetUsers();
     }
     
     [HttpGet("{id}")]
-    public UserSimple GetUser(Guid id)
+    public async Task<UserSimple> GetUser(string id)
     {
-        return _dbService.Find<User>(id)
-            .Simplify();
+        return await _userService.Get(id);
+    }
+    
+    [HttpGet("stat/{id}")]
+    public async Task<int[]> GetUserStat(string id)
+    {
+        var stat = await _userService.GetUserStat(id);
+
+        return new[] { stat.posts, stat.follower, stat.following };
     }
 
-    [HttpGet("followed/{id}")]
-    public UserSimple[] GetFollowedUsers(Guid id)
+    [HttpGet("following/{id}")]
+    public async Task<IList<string>> GetFollowingUsers(string id)
     {
-        return GetFollowingUsers(id, o => o.FollowedId);
+        return await _userService.GetFollowingUser(id);
     }
     
     [HttpGet("follower/{id}")]
-    public UserSimple[] GetFollowerUsers(Guid id)
+    public async Task<IList<string>> GetFollowerUsers(string id)
     {
-        return GetFollowingUsers(id, o => o.FollowerId);
-    }
-
-    private UserSimple[] GetFollowingUsers(Guid id, Func<Subscribe, Guid> func)
-    {
-        var user = _dbService.Find<User>(id);
-
-        var ids = _dbService.Where<Subscribe>(o => func(o).Equals(id));
-        return _dbService.Where<User>(o => o.Id.Equals(id))
-            .Select(o => o.Simplify())
-            .ToArray();
+        return await _userService.GetFollowedUser(id);
     }
     
+    [Authorize]
     [HttpPost]
-    public IResult AddUser([FromBody] UserSimple user)
+    public async Task<IResult> AddUser([FromBody] UserSimple user)
     {
-        _dbService.Add(user);
+        await _userService.Add(user);
         
         return Results.Ok();
     }
     
+    [Authorize]
     [HttpDelete("{id}")]
-    public IResult DeleteUser(Guid id)
+    public async Task<IResult> DeleteUser(string id)
     {
-        _dbService.Remove<User>(id);
+        await _userService.Remove(id);
         
         return Results.Ok();
     }
     
+    [Authorize]
     [HttpPut]
-    public IResult PutUser([FromBody] UserSimple user)
+    public async Task<IResult> PutUser([FromBody] UserSimple user)
     {
-        _dbService.Update<User, UserSimple>(user);
+        await _userService.Update(user);
         
         return Results.Ok();
     }

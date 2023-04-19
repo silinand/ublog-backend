@@ -1,53 +1,56 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UBlog.Core.Interfaces;
-using UBlog.EntityFramework.Models;
+using UBlog.Core.Services;
 
 namespace UBlog.Controllers;
 
+[Authorize]
 [ApiController]
 public class ActionController : ControllerBase
 {
-    private IDatabaseService _dbService;
+    private readonly IActionService _actionService;
     
-    public ActionController(IDatabaseService service)
+    public ActionController(IActionService service)
     {
-        _dbService = service;
+        _actionService = service;
     }
     
     [HttpPut("like/{id}")]
     public IResult Like(Guid id)
     {
-        var userId = Guid.NewGuid();// get from authorization
-        _dbService.Like(userId, id);
+        var userId = HttpContext.User.GetUsername();
+        
+        _actionService.Like(userId, id);
+        
         return Results.Ok();
     }
 
     [HttpDelete("like/{id}")]
     public IResult Unlike(Guid id)
     {
-        var userId = Guid.NewGuid();// get from authorization
+        var userId = HttpContext.User.GetUsername();
         
-        _dbService.Remove<Like>(o => o.PostId.Equals(id) && o.UserId.Equals(userId));
+        _actionService.Unlike(userId, id);
         
         return Results.Ok();
     }
     
     [HttpPut("subs/{id}")]
-    public IResult Subscribe(Guid id)
+    public IResult Subscribe(string id)
     {
-        var userId = Guid.NewGuid();// get from authorization
+        var userId = HttpContext.User.GetUsername();
         
-        _dbService.Subscribe(userId, id);
+        _actionService.Subscribe(userId, id);
         
         return Results.Ok();
     }
 
     [HttpDelete("subs/{id}")]
-    public IResult Unsubscribe(Guid id)
+    public IResult Unsubscribe(string id)
     {
-        var userId = Guid.NewGuid();// get from authorization
+        var userId = HttpContext.User.GetUsername();
         
-        _dbService.Remove<Subscribe>(o => o.FollowerId.Equals(userId) && o.FollowedId.Equals(id));
+        _actionService.Unsubscribe(userId, id);
         
         return Results.Ok();
     }
