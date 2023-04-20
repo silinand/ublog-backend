@@ -8,11 +8,11 @@ public interface IActionRepository
     
     IQueryable<Subscribe> GetSubs();
 
-    bool Add(Subscribe sub);
+    bool AddLike(string userId, Guid contentId);
     
-    bool Add(Like like);
+    bool AddSub(string userId, string followingId);
     
-    bool Remove(Subscribe sub);
+    Task<bool> RemoveLike(string userId, Guid contentId);
     
-    bool Remove(Like like);
+    Task<bool> RemoveSub(string userId, string followingId);
 }

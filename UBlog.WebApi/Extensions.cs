@@ -2,7 +2,7 @@ using System.Security.Claims;
 
 namespace UBlog;
 
-public static class Extentions
+public static class Extensions
 {
     public static string GetUsername(this ClaimsPrincipal user)
     {

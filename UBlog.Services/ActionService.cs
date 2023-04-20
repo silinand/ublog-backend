@@ -1,9 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using UBlog.Core.Services;
-using UBlog.EntityFramework.Models;
+using UBlog.EntityFramework;
 using UBlog.EntityFramework.Repositories.Abstract;
+using UBlog.Services.Abstract;
 
-namespace UBlog.EntityFramework.Services;
+namespace UBlog.Services;
 
 public class ActionService : IActionService
 {
@@ -18,8 +17,7 @@ public class ActionService : IActionService
     
     public async Task<bool> Like(string userId, Guid contentId)
     {
-        var like = new Like(userId, contentId);
-        _actionRepository.Add(like);
+        _actionRepository.AddLike(userId, contentId);
 
         await _stepper.Save();
 
@@ -28,12 +26,8 @@ public class ActionService : IActionService
 
     public async Task<bool> Unlike(string userId, Guid contentId)
     {
-        var item = await _actionRepository.GetLikes()
-            .FirstOrDefaultAsync(o => o.PostId.Equals(contentId) && o.UserId.Equals(userId));
+        _actionRepository.RemoveLike(userId, contentId);
         
-        //throw
-
-        _actionRepository.Remove(item);
         await _stepper.Save();
 
         return true;
@@ -41,8 +35,7 @@ public class ActionService : IActionService
 
     public async Task<bool> Subscribe(string userId, string followingId)
     {
-        var sub = new Subscribe(userId, followingId, DateTime.Now);
-        _actionRepository.Add(sub);
+        _actionRepository.AddSub(userId, followingId);
 
         await _stepper.Save();
 
@@ -51,12 +44,8 @@ public class ActionService : IActionService
 
     public async Task<bool> Unsubscribe(string userId, string followingId)
     {
-        var item = await _actionRepository.GetSubs()
-            .FirstOrDefaultAsync(o => o.FollowerId.Equals(userId) && o.FollowingId.Equals(followingId));
+        _actionRepository.RemoveSub(userId, followingId);
         
-        //throw
-
-        _actionRepository.Remove(item);
         await _stepper.Save();
 
         return true;

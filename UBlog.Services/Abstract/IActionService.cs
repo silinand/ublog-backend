@@ -1,4 +1,4 @@
-namespace UBlog.Core.Services;
+namespace UBlog.Services.Abstract;
 
 public interface IActionService
 {

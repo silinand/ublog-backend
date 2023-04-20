@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using UBlog.EntityFramework.Models;
 using UBlog.EntityFramework.Repositories.Abstract;
 
@@ -22,16 +23,47 @@ public class PostRepository : IPostRepository
         return await _context.Posts.FindAsync(id);
     }
 
-    public bool Add(Post post)
+    public async Task<Post[]> GetUserPosts(string userId)
+    {
+        return await _context.Posts
+            .Where(o => o.UserId == userId)
+            .ToArrayAsync();
+    }
+
+    public async Task<Post[]> GetLikedPosts(string userId)
+    {
+        return await _context.Likes
+            .Where(o => o.UserId == userId)
+            .Join(_context.Posts,
+                like => like.PostId,
+                post => post.Id,
+                (like, post) => post)
+            .ToArrayAsync();
+    }
+
+    public async Task<Post[]> GetFollowingPosts(string userId)
+    {
+        return await _context.Subscribes
+            .Where(o => o.FollowerId == userId)
+            .Join(_context.Posts,
+                sub => sub.FollowingId,
+                post => post.UserId,
+                (like, post) => post)
+            .ToArrayAsync();
+    }
+
+    public Guid Add(Post post)
     {
         _context.Add(post);
 
-        return true;
+        return post.Id;
     }
 
-    public bool Update(Post post)
+    public Guid Update(Post post)
     {
-        throw new NotImplementedException();
+        _context.Posts.Add(post);
+
+        return post.Id;
     }
 
     public bool Remove(Guid id)

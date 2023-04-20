@@ -1,13 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using UBlog.Core.Services;
 using UBlog.EntityFramework.Repositories;
 using UBlog.EntityFramework.Repositories.Abstract;
-using UBlog.EntityFramework.Services;
 
 namespace UBlog.EntityFramework;
 
-public static class ServiceExtensions
+public static class DataExtensions
 {
     public static void AddDbSupport(this IServiceCollection services)
     {
@@ -16,10 +14,6 @@ public static class ServiceExtensions
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IActionRepository, ActionRepository>();
-
-        services.AddScoped<IPostService, PostService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IActionService, ActionService>();
         
         services.AddScoped<IWorkStepper, WorkStepper>();
     }

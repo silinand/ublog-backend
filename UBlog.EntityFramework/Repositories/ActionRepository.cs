@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using UBlog.EntityFramework.Models;
 using UBlog.EntityFramework.Repositories.Abstract;
 
@@ -22,30 +23,49 @@ public class ActionRepository : IActionRepository
         return _context.Subscribes;
     }
 
-    public bool Add(Subscribe sub)
+    public bool AddLike(string userId, Guid contentId)
     {
-        _context.Add(sub);
+        var like = new Like
+        {
+            UserId = userId,
+            PostId = contentId
+        };
+
+        _context.Likes.Add(like);
 
         return true;
     }
 
-    public bool Add(Like like)
+    public bool AddSub(string userId, string followingId)
     {
-        _context.Add(like);
+        var sub = new Subscribe
+        {
+            FollowerId = userId,
+            FollowingId = followingId,
+            CreationTime = DateTime.Now
+        };
+
+        _context.Subscribes.Add(sub);
 
         return true;
     }
 
-    public bool Remove(Subscribe sub)
+    public async Task<bool> RemoveLike(string userId, Guid contentId)
     {
-        _context.Remove(sub);
+        var entity = await _context.Likes
+            .FirstOrDefaultAsync(o => o.PostId.Equals(contentId) && o.UserId.Equals(userId));
+
+        _context.Likes.Remove(entity);
 
         return true;
     }
 
-    public bool Remove(Like like)
+    public async Task<bool> RemoveSub(string userId, string followingId)
     {
-        _context.Remove(like);
+        var entity = await _context.Subscribes
+            .FirstOrDefaultAsync(o => o.FollowerId.Equals(userId) && o.FollowingId.Equals(followingId));
+
+        _context.Subscribes.Remove(entity);
 
         return true;
     }

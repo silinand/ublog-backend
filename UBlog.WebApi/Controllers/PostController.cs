@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UBlog.Core.Models;
-using UBlog.Core.Services;
+using UBlog.Services.Abstract;
 
 namespace UBlog.Controllers;
 
@@ -35,27 +35,29 @@ public class PostController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("userlikes/{id}")]
-    public Task<IList<PostSimple>> GetUserLikesPosts(string id)
+    [HttpGet("userlikes")]
+    public async Task<IList<PostSimple>> GetUserLikesPosts()
     {
-        return _postService.GetLikedPosts(id);
+        var id = HttpContext.User.GetUsername();
+        
+        return await _postService.GetLikedPosts(id);
     }
 
     [Authorize]
     [HttpGet("following")]
-    public Task<IList<PostSimple>> GetFollowingPosts()
+    public async Task<IList<PostSimple>> GetFollowingPosts()
     {
         var id = HttpContext.User.GetUsername();
 
-        return _postService.GetFollowingPosts(id);
+        return await _postService.GetFollowingPosts(id);
     }
     
     
     [Authorize]
     [HttpDelete("{id}")]
-    public IResult DeletePost(Guid id)
+    public async Task<IResult> DeletePost(Guid id)
     {
-        _postService.Remove(id);
+        await _postService.Remove(id);
         
         return Results.Ok();
     }
@@ -63,18 +65,18 @@ public class PostController : ControllerBase
     // =<
     [Authorize]
     [HttpPost]
-    public IResult PostPost([FromBody] PostSimple post)
+    public async Task<IResult> PostPost([FromBody] PostSimple post)
     {
-        _postService.Post(post);
+        await _postService.Post(post);
         
         return Results.Ok();
     }
     
     [Authorize]
     [HttpPut]
-    public IResult PutPost([FromBody] PostSimple post)
+    public async Task<IResult> PutPost([FromBody] PostSimple post)
     {
-        _postService.Update(post);
+        await _postService.Update(post);
         
         return Results.Ok();
     }

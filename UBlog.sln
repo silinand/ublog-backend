@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UBlog.Core", "UBlog.Core\UB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UBlog.EntityFramework", "UBlog.EntityFramework\UBlog.EntityFramework.csproj", "{D3B28A08-DEE9-47B5-BC78-6CC9DE3B65FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UBlog.Services", "UBlog.Services\UBlog.Services.csproj", "{5D1CAA59-D094-47FD-B8E3-3F741C865D2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{D3B28A08-DEE9-47B5-BC78-6CC9DE3B65FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3B28A08-DEE9-47B5-BC78-6CC9DE3B65FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3B28A08-DEE9-47B5-BC78-6CC9DE3B65FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D1CAA59-D094-47FD-B8E3-3F741C865D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D1CAA59-D094-47FD-B8E3-3F741C865D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D1CAA59-D094-47FD-B8E3-3F741C865D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D1CAA59-D094-47FD-B8E3-3F741C865D2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

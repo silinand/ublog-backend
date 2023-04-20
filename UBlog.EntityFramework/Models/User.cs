@@ -14,27 +14,4 @@ public class User
     //public string Password { get; set; }
     
     public List<Post> Posts { get; set; }
-
-    public User()
-    { }
-    
-    internal User(UserSimple simple)
-    {
-        Update(simple);
-    }
-    
-    public UserSimple Simplify() => new()
-    {
-        Id = Id,
-        Email = Email,
-        Name = Name,
-        Bio = Bio
-    };
-
-    public void Update(UserSimple user)
-    {
-        Email = user.Email;
-        Name = user.Name;
-        Bio = user.Bio;
-    }
 }

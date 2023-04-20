@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using UBlog.Core.Models;
-using UBlog.Core.Services;
+using UBlog.Services.Abstract;
 
 namespace UBlog.Controllers;
 

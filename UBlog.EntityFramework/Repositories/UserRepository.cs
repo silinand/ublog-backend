@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using UBlog.EntityFramework.Models;
 using UBlog.EntityFramework.Repositories.Abstract;
 
@@ -21,18 +22,45 @@ public class UserRepository : IUserRepository
         return await _context.Users.FindAsync(id);
     }
 
-    public bool Add(User user)
+    public async Task<(int posts, int follower, int following)> GetUserStat(string id)
+    {
+        var posts = await _context.Posts
+            .CountAsync(o => o.UserId == id);
+
+        var followers = await _context.Subscribes.CountAsync(o => o.FollowingId == id);
+        var following = await _context.Subscribes.CountAsync(o => o.FollowerId == id);
+
+        return (posts, followers, following);
+    }
+
+    public async Task<string[]> GetFollowingUser(string id)
+    {
+        return await _context.Subscribes
+            .Where(o => o.FollowerId == id)
+            .Select(o => o.FollowingId)
+            .ToArrayAsync();
+    }
+
+    public async Task<string[]> GetFollowedUser(string id)
+    {
+        return await _context.Subscribes
+            .Where(o => o.FollowingId == id)
+            .Select(o => o.FollowerId)
+            .ToArrayAsync();
+    }
+
+    public string Add(User user)
     {
         _context.Add(user);
 
-        return true;
+        return user.Id;
     }
 
-    public bool Update(User user)
+    public string Update(User user)
     {
         _context.Update(user);
 
-        return true;
+        return user.Id;
     }
 
     public bool Remove(string id)

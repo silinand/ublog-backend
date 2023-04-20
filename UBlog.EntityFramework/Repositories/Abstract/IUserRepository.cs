@@ -7,10 +7,16 @@ public interface IUserRepository
     IQueryable<User> GetUsers();
 
     Task<User> Get(string id);
+    
+    Task<(int posts, int follower, int following)> GetUserStat(string id);
 
-    bool Add(User user);
+    Task<string[]> GetFollowingUser(string id);
+    
+    Task<string[]> GetFollowedUser(string id);
 
-    bool Update(User user);
+    string Add(User user);
+
+    string Update(User user);
 
     bool Remove(string id);
 }
