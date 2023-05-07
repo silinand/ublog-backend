@@ -1,4 +1,4 @@
-namespace UBlog.Core.Models;
+namespace UBlog.Core.Models.Requests;
 
 public class LoginRequest
 {

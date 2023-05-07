@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 using UBlog.EntityFramework;
 using UBlog.EntityFramework.Models;
 using UBlog.EntityFramework.Repositories.Abstract;
@@ -52,7 +53,7 @@ public class UserService : IUserService
 
     public async Task<string> Add(UserCreationRequest user)
     {
-        var imageUrl = await _imageRepository.Add(user.Email);
+        var imageUrl = await _imageRepository.Add(user.Image);
         var entity = new User
         {
             Email = user.Email,
@@ -68,10 +69,13 @@ public class UserService : IUserService
         return entity.Id;
     }
 
-    public async Task<string> Update(UserSimple user)
+    public async Task<string> Update(string id, UserUpdateRequest user)
     {
-        var entity = await _userRepository.Get(user.Id);
+        var entity = await _userRepository.Get(id);
+        _imageRepository.Remove(entity.ImageUrl);
+        
         entity.Update(user);
+        entity.ImageUrl = await _imageRepository.Add(user.Image);
 
         _userRepository.Update(entity);
 

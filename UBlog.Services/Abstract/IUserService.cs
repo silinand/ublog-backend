@@ -1,4 +1,5 @@
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 
 namespace UBlog.Services.Abstract;
 
@@ -14,7 +15,7 @@ public interface IUserService
 
     Task<string> Add(UserCreationRequest user);
 
-    Task<string> Update(UserSimple user);
+    Task<string> Update(string id, UserUpdateRequest user);
 
     Task<bool> Remove(string id);
 }

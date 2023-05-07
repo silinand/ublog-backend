@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 using UBlog.Services.Abstract;
 
 namespace UBlog.Controllers;

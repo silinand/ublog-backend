@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 using UBlog.Services.Abstract;
 
 namespace UBlog.Controllers;

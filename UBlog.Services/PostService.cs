@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 using UBlog.EntityFramework;
 using UBlog.EntityFramework.Models;
 using UBlog.EntityFramework.Repositories.Abstract;

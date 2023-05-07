@@ -1,4 +1,5 @@
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 
 namespace UBlog.Services.Abstract;
 

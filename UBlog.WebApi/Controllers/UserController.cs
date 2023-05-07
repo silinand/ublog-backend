@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 using UBlog.Services.Abstract;
 
 namespace UBlog.Controllers;
@@ -42,15 +43,17 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPost]
-    public async Task<string> AddUser([FromBody] UserCreationRequest user)
+    public async Task<string> AddUser(UserCreationRequest user)
     {
         return await _userService.Add(user);
     }
     
     [Authorize]
-    [HttpDelete("{id}")]
-    public async Task<IResult> DeleteUser(string id)
+    [HttpDelete]
+    public async Task<IResult> DeleteUser()
     {
+        var id = HttpContext.User.GetUsername();
+        
         await _userService.Remove(id);
         
         return Results.Ok();
@@ -58,9 +61,11 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPut]
-    public async Task<IResult> PutUser([FromBody] UserSimple user)
+    public async Task<IResult> PutUser(UserUpdateRequest user)
     {
-        await _userService.Update(user);
+        var id = HttpContext.User.GetUsername();
+        
+        await _userService.Update(id, user);
         
         return Results.Ok();
     }

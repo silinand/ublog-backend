@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using UBlog.Core.Models;
+using UBlog.Core.Models.Requests;
 using UBlog.EntityFramework.Models;
 using UBlog.EntityFramework.Repositories.Abstract;
 using UBlog.Services.Abstract;
@@ -17,7 +18,7 @@ public static class ServiceExtensions
 
     #region Model extensions
 
-    public static void Update(this User entity, UserSimple user)
+    public static void Update(this User entity, UserUpdateRequest user)
     {
         entity.Email = user.Email;
         entity.Name = user.Name;
