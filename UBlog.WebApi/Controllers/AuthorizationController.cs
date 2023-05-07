@@ -1,8 +1,8 @@
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using UBlog.Core.Models;
 using UBlog.Core.Models.Requests;
 using UBlog.Services.Abstract;
 
@@ -19,7 +19,7 @@ public class AuthorizationController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<string> Login(LoginRequest request)
+    public async Task<LoginResponse> Login(LoginRequest request)
     {
         var user = await _userService.Get(request.Username);
 
@@ -35,6 +35,11 @@ public class AuthorizationController : ControllerBase
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
-        return new JwtSecurityTokenHandler().WriteToken(jwt);
+        return new LoginResponse
+        {
+            Id = user.Id,
+            Image = user.ImageUrl,
+            Token = new JwtSecurityTokenHandler().WriteToken(jwt)
+        };
     }
 }
