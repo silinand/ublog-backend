@@ -14,6 +14,7 @@ public static class DataExtensions
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IActionRepository, ActionRepository>();
+        services.AddSingleton<IImageRepository, ImageRepository>();
         
         services.AddScoped<IWorkStepper, WorkStepper>();
     }

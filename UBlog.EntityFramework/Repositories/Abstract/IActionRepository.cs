@@ -11,6 +11,10 @@ public interface IActionRepository
     bool AddLike(string userId, Guid contentId);
     
     bool AddSub(string userId, string followingId);
+
+    Task<int> GetLikeCount(Guid contentId);
+    
+    Task<bool> GetIsLiked(string userId, Guid contentId);
     
     Task<bool> RemoveLike(string userId, Guid contentId);
     

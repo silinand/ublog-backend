@@ -18,26 +18,15 @@ public class ApplicationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // var user = new User()
-        // {
-        //     Id = "admin",
-        //     Bio = "Bio",
-        //     Email = "admin@gmail.com",
-        //     Name = "User Admin"
-        // };
-        //
-        // var posts = new List<Post>();
-        // for (int i = 0; i < 5; i++)
-        // {
-        //     var post = new Post(PostGenerator.GetPost())
-        //     {
-        //         UserId = user.Id,
-        //         Id = Guid.NewGuid()
-        //     };
-        //     posts.Add(post);
-        // }
-        //
-        //  modelBuilder.Entity<User>().HasData(user);
-        //  modelBuilder.Entity<Post>().HasData(posts);
+        var user = new User()
+        {
+            Id = "admin",
+            Bio = "Bio",
+            Email = "admin@gmail.com",
+            Name = "User Admin"
+        };
+        
+         modelBuilder.Entity<User>().HasData(user);
+        
     }
 }

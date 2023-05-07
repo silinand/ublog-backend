@@ -27,14 +27,6 @@ public class UserController : ControllerBase
     {
         return await _userService.Get(id);
     }
-    
-    [HttpGet("stat/{id}")]
-    public async Task<int[]> GetUserStat(string id)
-    {
-        var stat = await _userService.GetUserStat(id);
-
-        return new[] { stat.posts, stat.follower, stat.following };
-    }
 
     [HttpGet("following/{id}")]
     public async Task<IList<string>> GetFollowingUsers(string id)
@@ -50,11 +42,9 @@ public class UserController : ControllerBase
     
     [Authorize]
     [HttpPost]
-    public async Task<IResult> AddUser([FromBody] UserSimple user)
+    public async Task<string> AddUser([FromBody] UserCreationRequest user)
     {
-        await _userService.Add(user);
-        
-        return Results.Ok();
+        return await _userService.Add(user);
     }
     
     [Authorize]

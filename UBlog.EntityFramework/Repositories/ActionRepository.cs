@@ -31,7 +31,7 @@ public class ActionRepository : IActionRepository
             PostId = contentId
         };
 
-        _context.Likes.Add(like);
+        _context.Add(like);
 
         return true;
     }
@@ -45,9 +45,19 @@ public class ActionRepository : IActionRepository
             CreationTime = DateTime.Now
         };
 
-        _context.Subscribes.Add(sub);
+        _context.Add(sub);
 
         return true;
+    }
+
+    public async Task<int> GetLikeCount(Guid contentId)
+    {
+        return await _context.Likes.CountAsync(o => o.PostId == contentId);
+    }
+
+    public async Task<bool> GetIsLiked(string userId, Guid contentId)
+    {
+        return await _context.Likes.AnyAsync(o => o.PostId == contentId && o.UserId == userId);
     }
 
     public async Task<bool> RemoveLike(string userId, Guid contentId)

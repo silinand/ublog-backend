@@ -17,7 +17,7 @@ public class PostController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IList<PostSimple>> GetPosts()
+    public async Task<PostSimple[]> GetPosts()
     {
         return await _postService.GetPosts();
     }
@@ -29,14 +29,14 @@ public class PostController : ControllerBase
     }
     
     [HttpGet("user/{id}")]
-    public async Task<IList<PostSimple>> GetUserPosts(string id)
+    public async Task<PostSimple[]> GetUserPosts(string id)
     {
         return await _postService.GetUserPosts(id);
     }
 
     [Authorize]
     [HttpGet("userlikes")]
-    public async Task<IList<PostSimple>> GetUserLikesPosts()
+    public async Task<PostSimple[]> GetUserLikesPosts()
     {
         var id = HttpContext.User.GetUsername();
         
@@ -61,20 +61,18 @@ public class PostController : ControllerBase
         
         return Results.Ok();
     }
-    
-    // =<
-    [Authorize]
+    //
+    // // =<
+    // // [Authorize]
     [HttpPost]
-    public async Task<IResult> PostPost([FromBody] PostSimple post)
+    public async Task<Guid> PostPost(PostCreationRequest post)
     {
-        await _postService.Post(post);
-        
-        return Results.Ok();
+        return await _postService.Post(post);
     }
     
     [Authorize]
     [HttpPut]
-    public async Task<IResult> PutPost([FromBody] PostSimple post)
+    public async Task<IResult> PutPost(PostModifyRequest post)
     {
         await _postService.Update(post);
         

@@ -82,3 +82,4 @@ _[Ss]cripts
 *.db
 *.db-shm
 *.db-wal
+**/wwwroot

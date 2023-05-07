@@ -6,8 +6,8 @@ public class Post
 {
     [Key]
     public Guid Id { get; set; }
-    public byte[] Image { get; set; }
     public string Title { get; set; }
+    public string ImageUrl { get; set; }
     public string Text { get; set; }
     public DateTime CreationTime { get; set; }
     

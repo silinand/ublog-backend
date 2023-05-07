@@ -10,11 +10,13 @@ namespace UBlog.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IImageRepository _imageRepository;
     private readonly IWorkStepper _stepper;
 
-    public UserService(IUserRepository userRepository, IWorkStepper stepper)
+    public UserService(IUserRepository userRepository, IImageRepository imageRepository, IWorkStepper stepper)
     {
         _userRepository = userRepository;
+        _imageRepository = imageRepository;
         _stepper = stepper;
     }
     
@@ -27,14 +29,15 @@ public class UserService : IUserService
 
     public async Task<UserSimple> Get(string id)
     {
-        var item = await _userRepository.Get(id);
+        var entity = await _userRepository.Get(id);
+        var counts = await _userRepository.GetUserStat(id);
         //throw
-        return item.Simplify();
-    }
+        var user = entity.Simplify();
+        user.PostsCount = counts.posts;
+        user.FollowersCount = counts.follower;
+        user.FollowingsCount = counts.following;
 
-    public async Task<(int posts, int follower, int following)> GetUserStat(string id)
-    {
-        return await _userRepository.GetUserStat(id);
+        return user;
     }
 
     public async Task<string[]> GetFollowingUser(string id)
@@ -47,12 +50,14 @@ public class UserService : IUserService
         return await _userRepository.GetFollowedUser(id);
     }
 
-    public async Task<string> Add(UserSimple user)
+    public async Task<string> Add(UserCreationRequest user)
     {
+        var imageUrl = await _imageRepository.Add(user.Email);
         var entity = new User
         {
             Email = user.Email,
             Name = user.Name,
+            ImageUrl = imageUrl,
             Bio = user.Bio
         };
         

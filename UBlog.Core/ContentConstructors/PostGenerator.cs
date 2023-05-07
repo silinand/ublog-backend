@@ -1,4 +1,5 @@
 using System.Dynamic;
+using System.Text.RegularExpressions;
 using UBlog.Core.Models;
 
 namespace UBlog.Core.ContentConstructors;
@@ -14,7 +15,6 @@ public static class PostGenerator
             Id = Guid.NewGuid(),
             Title = "Post title",
             Text = GetText(),
-            Image = GetImage(),
             CreationTime = DateTime.Now
         };
     }
@@ -41,5 +41,12 @@ public static class PostGenerator
         }
 
         return File.ReadAllBytes(files[index]);
+    }
+    
+    public static byte[] SaveDataUrlToFile(string dataUrl, string savePath)
+    {
+        var matchGroups = Regex.Match(dataUrl, @"^data:((?<type>[\w\/]+))?;base64,(?<data>.+)$").Groups;
+        var base64Data = matchGroups["data"].Value;
+        return Convert.FromBase64String(base64Data);
     }
 }

@@ -4,7 +4,7 @@ namespace UBlog.Services.Abstract;
 
 public interface IPostService
 {
-    Task<IList<PostSimple>> GetPosts();
+    Task<PostSimple[]> GetPosts();
     
     Task<PostSimple> GetPost(Guid id);
 
@@ -16,7 +16,7 @@ public interface IPostService
 
     Task<bool> Remove(Guid id);
 
-    Task<bool> Post(PostSimple post);
+    Task<Guid> Post(PostCreationRequest post);
 
-    Task<bool> Update(PostSimple post);
+    Task<bool> Update(PostModifyRequest post);
 }

@@ -2,9 +2,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UBlog.EntityFramework.Models;
 
-[Keyless]
+[PrimaryKey(nameof(UserId), nameof(PostId))]
 public class Like
 {
-    public string UserId { get; init; }
-    public Guid PostId { get; init; }
+    public string UserId { get; set; }
+    
+    public Guid PostId { get; set; }
 }

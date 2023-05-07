@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using UBlog.Core.Models;
 using UBlog.EntityFramework.Models;
+using UBlog.EntityFramework.Repositories.Abstract;
 using UBlog.Services.Abstract;
 
 namespace UBlog.Services;
@@ -27,7 +28,6 @@ public static class ServiceExtensions
     {
         entity.Title = post.Title;
         entity.Text = post.Text;
-        entity.Image = post.Image;
         entity.CreationTime = post.CreationTime;
     }
 
@@ -36,7 +36,8 @@ public static class ServiceExtensions
         Id = user.Id,
         Email = user.Email,
         Name = user.Name,
-        Bio = user.Bio
+        Bio = user.Bio,
+        ImageUrl = user.ImageUrl
     };
 
     public static PostSimple Simplify(this Post post) => new()
@@ -45,10 +46,9 @@ public static class ServiceExtensions
         UserId = post.UserId,
         Title = post.Title,
         Text = post.Text,
-        Image = post.Image,
+        ImageUrl = post.ImageUrl,
         CreationTime = post.CreationTime
     };
 
     #endregion
-
 }

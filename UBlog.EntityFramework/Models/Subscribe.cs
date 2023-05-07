@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UBlog.EntityFramework.Models;
 
-[Keyless]
+[PrimaryKey(nameof(FollowerId), nameof(FollowingId))]
 public class Subscribe
 {
     public string FollowerId { get; init; }

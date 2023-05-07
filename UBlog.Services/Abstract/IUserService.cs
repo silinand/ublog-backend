@@ -8,13 +8,11 @@ public interface IUserService
 
     Task<UserSimple> Get(string id);
 
-    Task<(int posts, int follower, int following)> GetUserStat(string id);
-
     Task<string[]> GetFollowingUser(string id);
     
     Task<string[]> GetFollowedUser(string id);
 
-    Task<string> Add(UserSimple user);
+    Task<string> Add(UserCreationRequest user);
 
     Task<string> Update(UserSimple user);
 

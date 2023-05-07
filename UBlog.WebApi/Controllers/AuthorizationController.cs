@@ -1,7 +1,8 @@
+
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using UBlog.Core.Models;
 using UBlog.Services.Abstract;
 
@@ -18,27 +19,22 @@ public class AuthorizationController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<IResult> Login(LoginRequest request)
+    public async Task<string> Login(LoginRequest request)
     {
         var user = await _userService.Get(request.Username);
 
-        // #todo change nullable
-        if (user is null || request.Password is null)
-            return Results.Unauthorized();
+        var claims = new List<Claim>
+        {
+            new (ClaimTypes.Sid, user.Id)
+        };
+        
+        var jwt = new JwtSecurityToken(
+            issuer: AuthOptions.Issuer,
+            audience: AuthOptions.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
+            signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
-        var claims = new List<Claim> { new (ClaimTypes.Name, user.Id) };
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
-        return Results.Ok(user.Id);
-    }
-
-    [HttpGet("logout")]
-    public async Task<IResult> Logout()
-    {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        return Results.Ok();
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 }
